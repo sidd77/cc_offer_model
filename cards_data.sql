@@ -2,11 +2,11 @@ drop table if exists analytics.SA_clicksData_cards;
 create table analytics.SA_clicksData_cards as
   select distinct cs_p_id, trunc(cs_ed) as event_date, tm_product
   from autouk.auto_app_report_recommendation_apply
-  where cs_ed between to_date('01-03-19', 'dd-mm-yy') and to_date('30-04-19', 'dd-mm-yy')
+  where cs_ed between to_date('01-01-19', 'dd-mm-yy') and to_date('31-01-19', 'dd-mm-yy')
   union distinct
   select distinct cs_p_id, trunc(cs_ed) as event_date, tm_product
   from autouk.auto_app_report_recommendation_info
-  where cs_ed between to_date('01-03-19', 'dd-mm-yy') and to_date('30-04-19', 'dd-mm-yy');
+  where cs_ed between to_date('01-01-19', 'dd-mm-yy') and to_date('31-01-19', 'dd-mm-yy');
 
 drop table if exists analytics.SA_searchData_cards;
 create table analytics.SA_searchData_cards as
@@ -15,14 +15,14 @@ create table analytics.SA_searchData_cards as
   purchasesavings,
   btsavings
   from domo.prd_card_event
-  where cs_ed between to_date('01-03-19', 'dd-mm-yy') and to_date('30-04-19', 'dd-mm-yy');
+  where cs_ed between to_date('01-01-19', 'dd-mm-yy') and to_date('31-01-19', 'dd-mm-yy');
 
 drop table if exists analytics.sa_score_cards;
 create table analytics.sa_score_cards as
 select cs_p_id, event_date, cr_credit_score_i, stdebt, ccdebt, cclimit, everdel,
        everdef, monthssincedel, monthssincedef, open_loans, open_creditcards
 from analytics.creditreports_full
-where event_date between to_date('01-03-19', 'dd-mm-yy') and to_date('30-04-19', 'dd-mm-yy');
+where event_date between to_date('01-01-19', 'dd-mm-yy') and to_date('31-01-19', 'dd-mm-yy');
 
 drop table if exists analytics.sa_fintab_cards;
 create table analytics.sa_fintab_cards as
