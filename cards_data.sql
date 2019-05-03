@@ -2,11 +2,11 @@ drop table if exists analytics.SA_clicksData_cards;
 create table analytics.SA_clicksData_cards as
   select distinct cs_p_id, trunc(cs_ed) as event_date, tm_product
   from autouk.auto_app_report_recommendation_apply
-  where cs_ed between to_date('01-01-19', 'dd-mm-yy') and to_date('31-03-19', 'dd-mm-yy')
+  where cs_ed between to_date('01-03-19', 'dd-mm-yy') and to_date('30-04-19', 'dd-mm-yy')
   union distinct
   select distinct cs_p_id, trunc(cs_ed) as event_date, tm_product
   from autouk.auto_app_report_recommendation_info
-  where cs_ed between to_date('01-01-19', 'dd-mm-yy') and to_date('31-03-19', 'dd-mm-yy');
+  where cs_ed between to_date('01-03-19', 'dd-mm-yy') and to_date('30-04-19', 'dd-mm-yy');
 
 drop table if exists analytics.SA_searchData_cards;
 create table analytics.SA_searchData_cards as
@@ -15,14 +15,14 @@ create table analytics.SA_searchData_cards as
   purchasesavings,
   btsavings
   from domo.prd_card_event
-  where cs_ed between to_date('01-01-19', 'dd-mm-yy') and to_date('31-03-19', 'dd-mm-yy');
+  where cs_ed between to_date('01-03-19', 'dd-mm-yy') and to_date('30-04-19', 'dd-mm-yy');
 
 drop table if exists analytics.sa_score_cards;
 create table analytics.sa_score_cards as
 select cs_p_id, event_date, cr_credit_score_i, stdebt, ccdebt, cclimit, everdel,
        everdef, monthssincedel, monthssincedef, open_loans, open_creditcards
 from analytics.creditreports_full
-where event_date between to_date('01-01-19', 'dd-mm-yy') and to_date('31-03-19', 'dd-mm-yy');
+where event_date between to_date('01-03-19', 'dd-mm-yy') and to_date('30-04-19', 'dd-mm-yy');
 
 drop table if exists analytics.sa_fintab_cards;
 create table analytics.sa_fintab_cards as
@@ -43,10 +43,12 @@ with t1 as (select cs_p_id, max(cs_ed) as srch_date, event_date
 
 drop table if exists analytics.sa_cards_data;
 create table analytics.sa_cards_data as
-  select apr, eligibility, rank, category,
-         stdebt, ccdebt, cclimit, everdel,
-         everdef, monthssincedel, monthssincedef,
-         open_loans, open_creditcards,
+  select apr, eligibility,
+         round(stdebt/1000,0) as stdebt,
+         round(ccdebt/1000,0) as ccdebt,
+         everdef,
+         open_loans,
+         open_creditcards,
          round((nvl(cashbacksavings,0)
                     + nvl(purchasesavings,0)
                     +  nvl(btsavings,0))/100, 0)
@@ -63,5 +65,9 @@ create table analytics.sa_cards_data as
     ELSE 'E'
   end as score,
   rank() over (partition by cs_p_id, event_date, category order by rank asc ) as rank1
-  from analytics.sa_fintab_cards where not cr_credit_score_i isnull
-  and cr_credit_score_i > 0 and eligibility > 0 and category <> 'Not Shown';
+  from analytics.sa_fintab_cards where eligibility >0 and not cr_credit_score_i isnull
+  and cr_credit_score_i > 0;
+
+select count(*) from (
+select distinct apr, eligibility, ccdebt, stdebt, everdef, open_creditcards, open_loans, savings, score, rank1 from analytics.sa_cards_data a where clicked=0);
+select count(*) from analytics.sa_cards_data where clicked=1;

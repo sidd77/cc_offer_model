@@ -21,8 +21,8 @@ engine = create_engine(connstr)
 conn = engine.connect()
 conn.begin()
 
-df_1 = pandas.read_sql("Select distinct apr, score, eligibility, rank, category, pop, clicked from analytics.sa_cardmodel_data where clicked=0;" , conn)
-df_2 = pandas.read_sql("Select apr, score, eligibility, rank, category, pop, clicked from analytics.sa_cardmodel_data where clicked=1" , conn)
+df_1 = pandas.read_sql("Select distinct apr, score, eligibility, rank, category, clicked from analytics.sa_cards_data where clicked=0;" , conn)
+df_2 = pandas.read_sql("Select apr, score, eligibility, rank, category, clicked from analytics.sa_cards_data where clicked=1" , conn)
 
 df_1.dropna(inplace=True)
 df_2.dropna(inplace=True)
