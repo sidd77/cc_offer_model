@@ -23,8 +23,22 @@ df_2 = pandas.read_sql("Select a.* from analytics.sa_cards_data a where clicked=
 ####### Model part ############
 ###############################
 
+if df_1.count() > 10 * df_2.count():
+    df_1 = df_1.sample(10* df_2.count())
+
+
 df_sample = df_1.append(df_2)
 df_sample.dropna(inplace=True)
+
+print(df_sample.shape)
+
+# temp_set = df_sample[['rank1', 'clicked']].groupby('rank1').sum()
+#
+# temp_set = temp_set[temp_set['clicked'] >0]
+#
+# df_sample = df_sample[df_sample['rank1'] in temp_set['rank1']]
+#
+# print(df_sample.shape)
 
 X = df_sample.drop(['clicked'], axis=1)
 y = df_sample['clicked']
@@ -36,22 +50,13 @@ bestfeatures = SelectKBest(score_func=chi2, k=10)
 fit = bestfeatures.fit(X,y)
 dfscores = pandas.DataFrame(fit.scores_)
 dfcolumns = pandas.DataFrame(X.columns)
-#concat two dataframes for better visualization
 featureScores = pandas.concat([dfcolumns,dfscores],axis=1)
 featureScores.columns = ['Specs','Score']  #naming the dataframe columns
 print(featureScores.nlargest(10,'Score'))  #print 10 best features
 
-# import seaborn as sns
-# corrmat = df_sample.corr()
-# top_corr_features = corrmat.index
-# plt.figure(figsize=(20,20))
-# #plot heat map
-# g=sns.heatmap(df_sample[top_corr_features].corr(),annot=True,cmap="RdYlGn")
-
-
-top10 = featureScores.nlargest(10, 'Score')['Specs'].to_list()
-
-X = X[top10]
+# top10 = featureScores.nlargest(10, 'Score')['Specs'].to_list()
+#
+# X = X[top10]
 
 X_train, X_test, y_train, y_test  = train_test_split(X, y, test_size=.25)
 # model = LogisticRegression()
