@@ -45,16 +45,16 @@ drop table if exists analytics.sa_card_features;
 create table analytics.sa_card_features as select
     apr,
     eligibility,
-    round(stdebt/1000,0) as stdebt,
-    round(ccdebt/1000,0) as ccdebt,
+    round(nvl(stdebt,0)/1000,0) as stdebt,
+    round(nvl(ccdebt,0)/1000,0) as ccdebt,
     everdef,
     everdel,
     case
-        When monthssincedef >0 then 1
+        When nvl(monthssincedef,0) >0 then 1
         Else 0
     end as curdef,
     case
-        When monthssincedel >0 then 1
+        When nvl(monthssincedel,0) >0 then 1
         Else 0
     end as curdel,
     open_loans,
@@ -78,3 +78,7 @@ create table analytics.sa_card_features as select
 from analytics.sa_joinedData_cards where eligibility >0 and not cr_credit_score_i isnull
 and cr_credit_score_i > 0;
 
+drop table if exists analytics.sa_card_modeldata;
+create table analytics.sa_card_modeldata as
+    select * from analytics.sa_card_features
+    where rank1 <=10;
