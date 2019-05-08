@@ -37,7 +37,7 @@ X = pandas.get_dummies(X)
 from sklearn.feature_selection import chi2
 X_new = SelectKBest(k=10).fit_transform(X,y)
 
-X_train, X_test, y_train, y_test  = train_test_split(X_new, y, test_size=.25)
+X_train, X_test, y_train, y_test  = train_test_split(X, y, test_size=.25)
 # model = LogisticRegression(class_weight='balanced')
 
 # class_weights = class_weight.compute_class_weight('balanced',
